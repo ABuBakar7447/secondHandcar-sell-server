@@ -18,12 +18,26 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
       const catagoryCollection = client.db('secondHandCar').collection('catagories');
+      const userCollection = client.db('secondHandCar').collection('usersdatabase');
     
       app.get('/catagory', async(req, res) =>{
         const query = {};
         const catagoryitem = await catagoryCollection.find(query).toArray();
         res.send(catagoryitem);
-      })
+      });
+
+      //uploading user information
+      app.post('/users', async(req, res)=>{
+        const userInformation = req.body;
+        console.log(userInformation);
+        const result = await userCollection.insertOne(userInformation);
+        res.send(result);
+      });
+
+
+
+
+
     }
     finally{
   
