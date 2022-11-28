@@ -20,6 +20,7 @@ async function run(){
     try{
       const catagoryCollection = client.db('secondHandCar').collection('catagories');
       const userCollection = client.db('secondHandCar').collection('usersdatabase');
+      const productsCollection = client.db('secondHandCar').collection('categoryproducts');
     
       app.get('/catagory', async(req, res) =>{
         const query = {};
@@ -34,9 +35,9 @@ async function run(){
         const user = await userCollection.findOne(query);
         if(user){
           const token = jwt.sign({email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'})
-          return res.send({accessToken: token});
+          return res.send({tokenForAccess: token});
         }
-        res.status(403).send({accessToken: 'congratulation you have got ghorar egg'})
+        res.status(403).send({tokenForAccess: 'congratulation you have got ghorar egg'})
       })
 
       //uploading user information
@@ -48,6 +49,20 @@ async function run(){
       });
 
 
+      app.get('/products', async(req,res) =>{
+        console.log(req.query)
+        let query ={};
+        if(req.query.product_category ){
+          query = {
+            product_category: req.query.product_category
+           
+          }
+        }
+        
+        const cursor = productsCollection.find(query);
+        const myreview = await cursor.toArray();
+        res.send(myreview);
+      });
 
 
 
