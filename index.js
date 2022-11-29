@@ -21,6 +21,7 @@ async function run(){
       const catagoryCollection = client.db('secondHandCar').collection('catagories');
       const userCollection = client.db('secondHandCar').collection('usersdatabase');
       const productsCollection = client.db('secondHandCar').collection('categoryproducts');
+      const bookCollection = client.db('secondHandCar').collection('bookeddatabase');
     
       app.get('/catagory', async(req, res) =>{
         const query = {};
@@ -45,6 +46,15 @@ async function run(){
         const userInformation = req.body;
         console.log(userInformation);
         const result = await userCollection.insertOne(userInformation);
+        res.send(result);
+      });
+
+
+      //modal data sending
+      app.post('/bookdata', async(req, res)=>{
+        const book = req.body;
+        console.log(book);
+        const result = await bookCollection.insertOne(book);
         res.send(result);
       });
 
