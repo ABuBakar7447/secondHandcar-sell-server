@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken')
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -66,7 +66,7 @@ async function run(){
         res.send(result);
       });
 
-
+      //product load based on category
       app.get('/products', async(req,res) =>{
         console.log(req.query)
         let query ={};
@@ -82,7 +82,7 @@ async function run(){
         res.send(myreview);
       });
 
-
+      //seller product load
       app.get('/product', async(req,res) =>{
         console.log(req.query)
         let query ={};
@@ -97,6 +97,17 @@ async function run(){
         const myreview = await cursor.toArray();
         res.send(myreview);
       });
+
+
+
+
+      app.delete('/delproduct/:id', async(req, res)=>{
+        const id = req.params.id;
+        console.log(id)
+        const query = {_id: ObjectId(id)};
+        const result = await productsCollection.deleteOne(query);
+        res.send(result);
+      })
 
 
 
