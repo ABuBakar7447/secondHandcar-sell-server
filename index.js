@@ -100,7 +100,7 @@ async function run(){
 
 
 
-
+      //seller can delete their product now
       app.delete('/delproduct/:id', async(req, res)=>{
         const id = req.params.id;
         console.log(id)
@@ -109,7 +109,21 @@ async function run(){
         res.send(result);
       })
 
+      //all user route
+      app.get('/user', async(req, res) =>{
+        const query = {role: 'Seller'};
+        const catagoryitem = await userCollection.find(query).toArray();
+        res.send(catagoryitem);
+      });
 
+      //admin can delete user /deluser/${id}
+      app.delete('/deluser/:id', async(req, res)=>{
+        const id = req.params.id;
+        console.log(id)
+        const query = {_id: ObjectId(id)};
+        const result = await userCollection.deleteOne(query);
+        res.send(result);
+      })
 
     }
     finally{
