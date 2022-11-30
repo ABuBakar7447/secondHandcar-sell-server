@@ -83,6 +83,22 @@ async function run(){
       });
 
 
+      app.get('/product', async(req,res) =>{
+        console.log(req.query)
+        let query ={};
+        if(req.query.seller_email ){
+          query = {
+            seller_email: req.query.seller_email
+           
+          }
+        }
+        
+        const cursor = productsCollection.find(query);
+        const myreview = await cursor.toArray();
+        res.send(myreview);
+      });
+
+
 
     }
     finally{
