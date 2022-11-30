@@ -109,21 +109,53 @@ async function run(){
         res.send(result);
       })
 
-      //all user route
-      app.get('/user', async(req, res) =>{
+      //all seller route
+      app.get('/seller', async(req, res) =>{
         const query = {role: 'Seller'};
-        const catagoryitem = await userCollection.find(query).toArray();
-        res.send(catagoryitem);
+        const sellerdetails = await userCollection.find(query).toArray();
+        res.send(sellerdetails);
       });
 
-      //admin can delete user /deluser/${id}
-      app.delete('/deluser/:id', async(req, res)=>{
+      //admin can delete seller /delseller/${id}
+      app.delete('/delseller/:id', async(req, res)=>{
         const id = req.params.id;
         console.log(id)
         const query = {_id: ObjectId(id)};
         const result = await userCollection.deleteOne(query);
         res.send(result);
       })
+
+      //all buyer route
+      app.get('/buyer', async(req, res) =>{
+        const query = {role: 'Buyer'};
+        const buyerdetails = await userCollection.find(query).toArray();
+        res.send(buyerdetails);
+      });
+
+      //admin can delete buyer /delbuyer/${id}
+      app.delete('/delbuyer/:id', async(req, res)=>{
+        const id = req.params.id;
+        console.log(id)
+        const query = {_id: ObjectId(id)};
+        const result = await userCollection.deleteOne(query);
+        res.send(result);
+      })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
     finally{
