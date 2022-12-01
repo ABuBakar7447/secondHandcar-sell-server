@@ -177,10 +177,32 @@ async function run(){
       })
 
 
+      app.get('/seller/:email', async(req, res) =>{
+        const email = req.params.email;
+        console.log(email)
+        const query = {email}
+        const user = await userCollection.findOne(query);
+        res.send( { isSeller: user?.role === 'Seller' } )
+
+      })
 
 
 
-      
+
+
+      app.get('/booking', async(req,res) =>{
+        
+        if (req.query.semail ){
+          query = {
+            seller_email: req.query.seller_email
+           
+          }
+        }
+        
+        const cursor = productsCollection.find(query);
+        const myreview = await cursor.toArray();
+        res.send(myreview);
+      });
 
 
 
