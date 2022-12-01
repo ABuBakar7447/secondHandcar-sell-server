@@ -16,6 +16,24 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+      return res.status(401).send('you are not authorized for this access');
+  }
+  const token = authHeader.split(' ')[1];
+  console.log(token)
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+    if (err) {
+        return res.status(403).send({ message:'access is forbiden' })
+    }
+    req.decoded = decoded;
+    next();
+  })
+
+}
+
 async function run(){
     try{
       const catagoryCollection = client.db('secondHandCar').collection('catagories');
@@ -83,10 +101,17 @@ async function run(){
       });
 
       //seller product load
-      app.get('/product', async(req,res) =>{
+      app.get('/product',verifyJWT, async(req,res) =>{
         console.log(req.query)
-        let query ={};
-        if(req.query.seller_email ){
+        const email = req.query.email;
+        const decodedEmail = req.decoded.seller_email;
+
+        if(email !== decodedEmail){
+          return res.status(403).send({message: 'access is forbiden'})
+        }
+
+        // const query ={seller_email: seller_email};
+        if (req.query.seller_email ){
           query = {
             seller_email: req.query.seller_email
            
@@ -94,8 +119,8 @@ async function run(){
         }
         
         const cursor = productsCollection.find(query);
-        const myreview = await cursor.toArray();
-        res.send(myreview);
+        const result = await cursor.toArray();
+        res.send(result);
       });
 
 
@@ -141,6 +166,21 @@ async function run(){
         res.send(result);
       })
 
+
+      app.get('/admin/:email', async(req, res) =>{
+        const email = req.params.email;
+        console.log(email)
+        const query = {email}
+        const user = await userCollection.findOne(query);
+        res.send( { isAdmin: user?.role === 'Admin' } )
+
+      })
+
+
+
+
+
+      
 
 
 
