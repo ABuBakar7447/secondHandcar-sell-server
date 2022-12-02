@@ -53,7 +53,7 @@ async function run(){
         const query = {email: email};
         const user = await userCollection.findOne(query);
         if(user){
-          const token = jwt.sign({email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'})
+          const token = jwt.sign({email}, process.env.ACCESS_TOKEN, {expiresIn: '10d'})
           return res.send({tokenForAccess: token});
         }
         res.status(403).send({tokenForAccess: 'congratulation you have got ghorar egg'})
@@ -157,6 +157,12 @@ async function run(){
         res.send(buyerdetails);
       });
 
+
+      
+
+
+
+
       //admin can delete buyer /delbuyer/${id}
       app.delete('/delbuyer/:id', async(req, res)=>{
         const id = req.params.id;
@@ -167,6 +173,7 @@ async function run(){
       })
 
 
+      //admin route checking
       app.get('/admin/:email', async(req, res) =>{
         const email = req.params.email;
         console.log(email)
@@ -176,7 +183,7 @@ async function run(){
 
       })
 
-
+      //seller route checking
       app.get('/seller/:email', async(req, res) =>{
         const email = req.params.email;
         console.log(email)
@@ -189,31 +196,94 @@ async function run(){
 
 
 
+      //buyer myorder data
 
-      app.get('/booking', async(req,res) =>{
+      app.get('/myorder', async(req,res) =>{
         
-        if (req.query.semail ){
+        if (req.query.email ){
           query = {
-            seller_email: req.query.seller_email
+            email: req.query.email
            
           }
         }
         
-        const cursor = productsCollection.find(query);
-        const myreview = await cursor.toArray();
-        res.send(myreview);
+        const cursor = bookCollection.find(query);
+        const result = await cursor.toArray();
+        res.send(result);
+      });
+
+
+      //buyer route checking
+      app.get('/buyer/:email', async(req, res) =>{
+        const email = req.params.email;
+        console.log(email)
+        const query = {email}
+        const user = await userCollection.findOne(query);
+        res.send( { isBuyer: user?.role === 'Buyer' } )
+
+      })
+
+
+
+      //seller verify
+      app.put('/update/:id',async(req, res) => {
+        const id = req.params.id;
+        const filter = {_id: ObjectId(id)}
+        const options = { upsert: true};
+        const updateDoc = {
+          $set: {
+            verification: 'Verified'
+          }
+        }
+        const result = await userCollection.updateOne(filter, updateDoc, options)
+        res.send(result);
+      })
+
+
+      //product advertise
+      app.put('/newrole/:id',async(req, res) => {
+        const id = req.params.id;
+        console.log( 'id',id)
+        const filter = {_id: ObjectId(id)}
+        const options = { upsert: true};
+        const updateDoc = {
+          $set: {
+            role: 'Advertise'
+          }
+        }
+        const uprole = await productsCollection.updateOne(filter, updateDoc, options)
+        res.send(uprole);
+      })
+
+
+      app.get('/advertised', async(req, res) =>{
+        const query = {role: 'Advertise'};
+        const sellerdetails = await productsCollection.find(query).toArray();
+        res.send(sellerdetails);
       });
 
 
 
+      
 
 
 
+      app.get('/verifyseller', async(req,res) =>{
+        
+        if (req.query.seller_email ){
+          query = {
+            email: req.query.seller_email
+           
+          }
+        }
+        
+        const cursor = userCollection.find(query);
+        const verify = await cursor.toArray();
+        res.send(verify);
+      });
 
 
-
-
-
+      
 
 
 
