@@ -255,7 +255,7 @@ async function run(){
         res.send(uprole);
       })
 
-
+      //advertised data collection
       app.get('/advertised', async(req, res) =>{
         const query = {role: 'Advertise'};
         const sellerdetails = await productsCollection.find(query).toArray();
@@ -264,12 +264,12 @@ async function run(){
 
 
 
-      
 
 
 
-      app.get('/verifyseller', async(req,res) =>{
-        
+
+      app.get('/sellerdetails', async(req,res) =>{
+        console.log(req.query.seller_email)
         if (req.query.seller_email ){
           query = {
             email: req.query.seller_email
@@ -279,6 +279,7 @@ async function run(){
         
         const cursor = userCollection.find(query);
         const verify = await cursor.toArray();
+        console.log(verify)
         res.send(verify);
       });
 
